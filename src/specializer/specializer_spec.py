@@ -103,6 +103,15 @@ for instruction in Instructions:
         for count in range(4):
             specialized_instructions[f'{instruction.name}_WITH_{count}'] = \
                 _gen_variadic_instruction(instruction, count)
+    elif instruction.name == 'JUMPZ':
+        specialized_instructions['JUMPZ_TAKEN'] = _gen_ordinary_instruction(
+            instruction,
+            '{stack_1} == 0',
+        )
+        specialized_instructions['JUMPZ_UNTAKEN'] = _gen_ordinary_instruction(
+            instruction,
+            '{stack_1} != 0',
+        )
     elif instruction.action.effect is not None:
         specialized_instructions[instruction.name] = \
             _gen_ordinary_instruction(instruction)
@@ -117,6 +126,7 @@ Instructions = ActionEnum(
 GUESS_LIMITING = frozenset([
     Instructions.NEXT,
     Instructions.JUMP,
-    Instructions.JUMPZ,
+    Instructions.JUMPZ_TAKEN,
+    Instructions.JUMPZ_UNTAKEN,
     Instructions.CALL,
 ])
